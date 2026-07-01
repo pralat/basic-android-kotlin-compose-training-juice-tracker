@@ -31,7 +31,7 @@ data class Juice(
     val rating: Int
 )
 
-enum class JuiceColor(val color: Int, @StringRes val label: Int) {
+enum class JuiceColor(val color: Int, @get:StringRes val label: Int) {
     Red(Color.RED, R.string.red),
     Blue(Color.BLUE, R.string.blue),
     Green(Color.GREEN, R.string.green),
