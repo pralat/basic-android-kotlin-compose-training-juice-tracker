@@ -42,5 +42,10 @@ class EntryDialogFragment : BottomSheetDialogFragment() {
             )
             dismiss()
         }
+
+        // User clicked the Cancel button; just exit the dialog without saving the data
+        binding.cancelButton.setOnClickListener {
+            dismiss()
+        }
     }
 }
