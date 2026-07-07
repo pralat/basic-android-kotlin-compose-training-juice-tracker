@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
+import com.example.juicetracker.data.JuiceColor
 import com.example.juicetracker.databinding.FragmentEntryDialogBinding
 import com.example.juicetracker.ui.AppViewModelProvider
 import com.example.juicetracker.ui.EntryViewModel
@@ -23,7 +25,22 @@ class EntryDialogFragment : BottomSheetDialogFragment() {
         return FragmentEntryDialogBinding.inflate(inflater, container, false).root
     }
 
+    var selectedColor: JuiceColor = JuiceColor.Red
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val binding = FragmentEntryDialogBinding.bind(view)
+        val args: EntryDialogFragmentArgs by navArgs()
+        val juiceId = args.itemId
+
+        binding.saveButton.setOnClickListener {
+            entryViewModel.saveJuice(
+                juiceId,
+                binding.name.text.toString(),
+                binding.description.text.toString(),
+                selectedColor.name,
+                binding.ratingBar.rating.toInt()
+            )
+            dismiss()
+        }
     }
 }
