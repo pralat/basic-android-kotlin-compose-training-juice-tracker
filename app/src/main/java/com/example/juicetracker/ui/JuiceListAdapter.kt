@@ -15,14 +15,25 @@
  */
 package com.example.juicetracker.ui
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.juicetracker.data.Juice
 import com.example.juicetracker.data.JuiceColor
-import com.example.juicetracker.databinding.ListItemBinding
+import com.example.juicetracker.R
 
 class JuiceListAdapter(
     private var onEdit: (Juice) -> Unit,
@@ -30,41 +41,59 @@ class JuiceListAdapter(
 ) : ListAdapter<Juice, JuiceListAdapter.JuiceListViewHolder>(JuiceDiffCallback()) {
 
     class JuiceListViewHolder(
-        private val binding: ListItemBinding,
+        private val composeView : ComposeView, // missing in the document.
         private val onEdit: (Juice) -> Unit,
         private val onDelete: (Juice) -> Unit
-    ) : RecyclerView.ViewHolder(binding.root) {
-        private val nameView = binding.name
-        private val description = binding.description
-        private val drinkImage = binding.drinkColorOverlay
-        private val ratingBar = binding.ratingBar
+    ) : RecyclerView.ViewHolder(composeView) {
 
         fun bind(juice: Juice) {
-            nameView.text = juice.name
-            description.text = juice.description
-            drinkImage.setColorFilter(
-                JuiceColor.valueOf(juice.color).color,
-                android.graphics.PorterDuff.Mode.SRC_IN
-            )
-            ratingBar.rating = juice.rating.toFloat()
-            binding.deleteButton.setOnClickListener {
-                onDelete(juice)
-            }
-            binding.root.setOnClickListener {
-                onEdit(juice)
-            }
+
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = JuiceListViewHolder(
-        ListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-        onEdit,
-        onDelete
-    )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JuiceListViewHolder {
+        return JuiceListViewHolder(
+            ComposeView(parent.context),
+            onEdit,
+            onDelete
+        )
+    }
 
     override fun onBindViewHolder(holder: JuiceListViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
+}
+@Composable
+fun ListItem(
+    input: Juice,
+    onDelete: (Juice) -> Unit,
+    modifier: Modifier = Modifier
+) {
+}
+@Composable
+fun JuiceIcon(color: String, modifier: Modifier = Modifier) {
+    val colorLabelMap = JuiceColor.values().associateBy { stringResource(it.label) }
+    val selectedColor = colorLabelMap[color]?.let { Color(it.color) }
+    val juiceIconContentDescription = stringResource(R.string.juice_color, color)
+
+    Box(
+        modifier.semantics {
+            contentDescription = juiceIconContentDescription
+        }
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_juice_color),
+            contentDescription = null,
+            tint = selectedColor ?: Color.Red,
+            modifier = Modifier.align(Alignment.Center)
+        )
+        Icon(painter = painterResource(R.drawable.ic_juice_clear), contentDescription = null)
+    }
+}
+@Preview
+@Composable
+fun PreviewJuiceIcon() {
+    JuiceIcon("Yellow")
 }
 
 class JuiceDiffCallback : DiffUtil.ItemCallback<Juice>() {
