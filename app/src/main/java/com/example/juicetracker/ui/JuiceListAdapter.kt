@@ -46,6 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 class JuiceListAdapter(
     private var onEdit: (Juice) -> Unit,
@@ -114,9 +117,6 @@ fun JuiceDetails(juice: Juice, modifier: Modifier = Modifier) {
     }
 }
 
-
-
-
 @Composable
 fun RatingDisplay(rating: Int, modifier: Modifier = Modifier) {
     val displayDescription = pluralStringResource(R.plurals.number_of_stars, count = rating)
@@ -137,6 +137,18 @@ fun RatingDisplay(rating: Int, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun DeleteButton(onDelete: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(
+        onClick = { onDelete() },
+        modifier = modifier
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_delete),
+            contentDescription = stringResource(R.string.delete)
+        )
+    }
+}
 @Preview
 @Composable
 fun PreviewJuiceIcon() {
@@ -146,6 +158,11 @@ fun PreviewJuiceIcon() {
 @Composable
 fun PreviewJuiceDetails() {
     JuiceDetails(Juice(1, "Sweet Beet", "Apple, carrot, beet, and lemon", "Red", 4))
+}
+@Preview
+@Composable
+fun PreviewDeleteIcon() {
+    DeleteButton({})
 }
 class JuiceDiffCallback : DiffUtil.ItemCallback<Juice>() {
     override fun areItemsTheSame(oldItem: Juice, newItem: Juice): Boolean {
