@@ -16,6 +16,7 @@
 package com.example.juicetracker.ui
 
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -34,6 +35,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.juicetracker.data.Juice
 import com.example.juicetracker.data.JuiceColor
 import com.example.juicetracker.R
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 
 class JuiceListAdapter(
     private var onEdit: (Juice) -> Unit,
@@ -90,12 +102,51 @@ fun JuiceIcon(color: String, modifier: Modifier = Modifier) {
         Icon(painter = painterResource(R.drawable.ic_juice_clear), contentDescription = null)
     }
 }
+@Composable
+fun JuiceDetails(juice: Juice, modifier: Modifier = Modifier) {
+    Column(modifier, verticalArrangement = Arrangement.Top) {
+        Text(
+            text = juice.name,
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+        )
+        Text(juice.description)
+        RatingDisplay(rating = juice.rating, modifier = Modifier.padding(top = 8.dp))
+    }
+}
+
+
+
+
+@Composable
+fun RatingDisplay(rating: Int, modifier: Modifier = Modifier) {
+    val displayDescription = pluralStringResource(R.plurals.number_of_stars, count = rating)
+    Row(
+        // Content description is added here to support accessibility
+        modifier.semantics {
+            contentDescription = displayDescription
+        }
+    ) {
+        repeat(rating) {
+            // Star [contentDescription] is null as the image is for illustrative purpose
+            Image(
+                modifier = Modifier.size(32.dp),
+                painter = painterResource(R.drawable.baseline_star_24),
+                contentDescription = null
+            )
+        }
+    }
+}
+
 @Preview
 @Composable
 fun PreviewJuiceIcon() {
     JuiceIcon("Yellow")
 }
-
+@Preview
+@Composable
+fun PreviewJuiceDetails() {
+    JuiceDetails(Juice(1, "Sweet Beet", "Apple, carrot, beet, and lemon", "Red", 4))
+}
 class JuiceDiffCallback : DiffUtil.ItemCallback<Juice>() {
     override fun areItemsTheSame(oldItem: Juice, newItem: Juice): Boolean {
         return oldItem.id == newItem.id
