@@ -46,9 +46,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
+
 
 class JuiceListAdapter(
     private var onEdit: (Juice) -> Unit,
@@ -61,8 +64,20 @@ class JuiceListAdapter(
         private val onDelete: (Juice) -> Unit
     ) : RecyclerView.ViewHolder(composeView) {
 
-        fun bind(juice: Juice) {
-
+        fun bind(input: Juice) {
+            composeView.setContent {
+                ListItem(
+                    input,
+                    onEdit,
+                    onDelete,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onEdit(input)
+                        }
+                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                )
+            }
         }
     }
 
@@ -81,10 +96,26 @@ class JuiceListAdapter(
 @Composable
 fun ListItem(
     input: Juice,
+    onEdit: (Juice) -> Unit,
     onDelete: (Juice) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Mdc3Theme {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            JuiceIcon(input.color)
+            JuiceDetails(input, Modifier.weight(1f))
+            DeleteButton(
+                onDelete = {
+                    onDelete(input)
+                },
+                modifier = Modifier.align(Alignment.Top)
+            )        }
+    }
 }
+
 @Composable
 fun JuiceIcon(color: String, modifier: Modifier = Modifier) {
     val colorLabelMap = JuiceColor.values().associateBy { stringResource(it.label) }
@@ -163,6 +194,11 @@ fun PreviewJuiceDetails() {
 @Composable
 fun PreviewDeleteIcon() {
     DeleteButton({})
+}
+@Preview
+@Composable
+fun PreviewListItem() {
+    ListItem(Juice(1, "Sweet Beet", "Apple, carrot, beet, and lemon", "Red", 4), {}, {})
 }
 class JuiceDiffCallback : DiffUtil.ItemCallback<Juice>() {
     override fun areItemsTheSame(oldItem: Juice, newItem: Juice): Boolean {
